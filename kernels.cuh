@@ -75,3 +75,21 @@ __global__ void sgemm_smem(int M, int N, int K, float alpha, float beta,
 
     C[threadRow * N + threadCol] = alpha * acc + beta * C[threadRow * N + threadCol];
 }
+
+template <const uint BM, const uint BN, const uint BK, const int TM>
+__global__ void sgemm1D_blocktiling(int M, int N, int K, float alpha, float beta,
+                            const float* A, const float* B, float* C) {
+    
+}
+
+template <const uint BLOCKSIZE>
+__global__ void sgemm2D_blocktiling(int M, int N, int K, float alpha, float beta,
+                            const float* A, const float* B, float* C) {
+
+}
+
+template <const uint BLOCKSIZE>
+__global__ void sgemm_vectorize(int M, int N, int K, float alpha, float beta,
+                            const float* A, const float* B, float* C) {
+
+}
