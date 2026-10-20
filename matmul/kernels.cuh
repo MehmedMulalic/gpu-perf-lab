@@ -31,10 +31,10 @@ __global__ void sgemm_coalesced_gmem(int M, int N, int K, float alpha, float bet
     const int cRow = blockIdx.x * BLOCKSIZE + (threadIdx.x / BLOCKSIZE);
     const int cCol = blockIdx.y * BLOCKSIZE + (threadIdx.x % BLOCKSIZE);
 
-    if (x < M && y < N) {
+    if (cRow < M && cCol < N) {
         float acc = 0.0f;
         for (int i = 0; i < K; ++i) {
-            acc += A[x * K + i] * B[i * N + y];
+            acc += A[cRow * K + i] * B[i * N + cCol];
         }
 
         C[x * N + y] = alpha * acc + beta * C[x * N + y];
