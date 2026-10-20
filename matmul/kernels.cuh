@@ -6,6 +6,8 @@
 
 #define CEIL_DIV(M, N) (((M) + (N)-1) / (N))
 
+using uint = unsigned int;
+
 /*
 MxK * KxN = MxN
 */
