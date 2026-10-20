@@ -5,9 +5,9 @@
 
 #include "kernels.cuh"
 
-inline void cudaCheck(cudaError_t err, const char *file, int line) {
+inline void errorCheck(cudaError_t err, const char* kernel_name) {
     if (err != cudaSuccess) {
-        printf("CUDA Error at file %s:%d:\n%s\n", file, line, cudaGetErrorString(err));
+        printf("CUDA Error in %s kernel: %s\n", kernel_name, cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
 }
@@ -18,6 +18,9 @@ void run_sgemm_naive(int M, int N, int K, float alpha, float beta,
     dim3 blockDim(32, 32);
 
     sgemm_naive<<<gridDim, blockDim>>>(M, N, K, alpha, beta, A, B, C);
+    
+    cudaError_t err = cudaGetLastError();
+    errorCheck(err, "Naive");
 }
 
 void run_sgemm_coalesced_gmem(int M, int N, int K, float alpha, float beta,
@@ -26,6 +29,9 @@ void run_sgemm_coalesced_gmem(int M, int N, int K, float alpha, float beta,
     dim3 blockDim(32 * 32);
                                 
     sgemm_coalesced_gmem<32><<<gridDim, blockDim>>>(M, N, K, alpha, beta, A, B, C);
+    
+    cudaError_t err = cudaGetLastError();
+    errorCheck(err, "GMEM");
 }
 
 void run_sgemm_smem(int M, int N, int K, float alpha, float beta,
@@ -34,6 +40,9 @@ void run_sgemm_smem(int M, int N, int K, float alpha, float beta,
     dim3 blockDim(32 * 32);
 
     sgemm_smem<32><<<gridDim, blockDim>>>(M, N, K, alpha, beta, A, B, C);
+    
+    cudaError_t err = cudaGetLastError();
+    errorCheck(err, "SMEM");
 }
 
 void run_sgemm1D_blocktiling(int M, int N, int K, float alpha, float beta,
