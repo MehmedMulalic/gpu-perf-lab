@@ -71,7 +71,7 @@ int main() {
     float beta = 0.5f;
 
     std::vector<float> A(M * K, 1.0f);
-    std::vector<float> A(K * N, 2.0f);
+    std::vector<float> B(K * N, 2.0f);
     std::vector<float> C(M * N, 0.0f);
     
     run_sgemm_naive(M, N, K, alpha, beta, A, B, C);
