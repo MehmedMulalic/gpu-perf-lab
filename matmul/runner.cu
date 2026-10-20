@@ -16,7 +16,7 @@ void run_sgemm_naive(int M, int N, int K, float alpha, float beta,
     dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32));
     dim3 blockDim(32, 32);
 
-    sgemm_naive<<<gridDim, blockDim>>>(M, N, K, alpha, beta, A, B, C)
+    sgemm_naive<<<gridDim, blockDim>>>(M, N, K, alpha, beta, A, B, C);
 }
 
 void run_sgemm_coalesced_gmem(int M, int N, int K, float alpha, float beta,
