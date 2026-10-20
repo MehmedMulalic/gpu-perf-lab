@@ -37,7 +37,7 @@ __global__ void sgemm_coalesced_gmem(int M, int N, int K, float alpha, float bet
             acc += A[cRow * K + i] * B[i * N + cCol];
         }
 
-        C[x * N + y] = alpha * acc + beta * C[x * N + y];
+        C[cRow * N + cCol] = alpha * acc + beta * C[cRow * N + cCol];
     }
 }
 
