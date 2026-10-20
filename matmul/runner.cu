@@ -1,7 +1,15 @@
-#include "kernels.cuh"
 #include <cuda_runtime.h>
+#include <fstream>
+#include <cstdio>
 
+#include "kernels.cuh"
 
+inline void cudaCheck(cudaError_t err, const char *file, int line) {
+    if (err != cudaSuccess) {
+        printf("CUDA Error at file %s:%d:\n%s\n", file, line, cudaGetErrorString(err));
+        exit(EXIT_FAILURE);
+    }
+}
 
 void run_sgemm_naive(int M, int N, int K, float alpha, float beta,
                             const float* A, const float* B, float* C) {
