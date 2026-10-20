@@ -1,6 +1,7 @@
 #include <cuda_runtime.h>
 #include <fstream>
 #include <cstdio>
+#include <vector>
 
 #include "kernels.cuh"
 
@@ -59,4 +60,19 @@ void run_sgemm2D_blocktiling(int M, int N, int K, float alpha, float beta,
     dim3 blockDim((BM * BN) / TM);
 
     sgemm1D_blocktiling<BM, BN, BK, TM><<<gridDim, blockDim>>>(M, N, K, alpha, beta, A, B, C);
+}
+
+int main() {
+    int M = 128;
+    int N = 128;
+    int K = 128;
+
+    float alpha = 1.0f;
+    float beta = 0.5f;
+
+    std::vector<float> A(M * K, 1.0f);
+    std::vector<float> A(K * N, 2.0f);
+    std::vector<float> C(M * N, 0.0f);
+    
+    run_sgemm_naive(M, N, K, alpha, beta, A, B, C);
 }
