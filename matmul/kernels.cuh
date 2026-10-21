@@ -83,7 +83,47 @@ __global__ void sgemm_smem(int M, int N, int K, float alpha, float beta,
 template <const uint BM, const uint BN, const uint BK, const int TM>
 __global__ void sgemm1D_blocktiling(int M, int N, int K, float alpha, float beta,
                             const float* A, const float* B, float* C) {
-    
+    const uint cRow = blockIdx.x;
+    const uint cCol = blockIdx.y;
+
+    const int threadCol = threadIdx.x % BN;
+    const int threadRow = threadIdx.x / BN;
+
+    __shared__ float As[BM * BK];
+    __shared__ float Bs[BK * BN];
+
+    // advance pointers
+    A += cRow * BM * K;
+    B += cCol * BN;
+    C += cRow * BM * K + cCol * BN;
+
+    const uint innerColA = threadIdx.x % BK;
+    const uint innerRowA = threadIdx.x / BK;
+    const uint innerColB = threadIdx.x % BN;
+    const uint innerRowB = threadIdx.x / BN;
+
+    float threadResults[TM] = {0.0f};
+    for (uint bkIdx = 0; bkIdx < K; bkIdx += BK) {
+        As[innerRowA * BK + innerColA] = A[innerRowA * K + innerColA];
+        Bs[innerRowB * BN + innerColB] = B[innerRowB * N + innerColB];
+        __syncthreads();
+
+        A += BK;
+        B += BK * N;
+
+        // calculate per-thread result
+        for (uint dotIdx = 0; dotIdx < BK; ++dotIdx) {
+            float tmpB = Bs[dotIdx * BN + threadCol];
+            for (uint resIdx = 0; resIdx < TM; ++resIdx) {
+                threadResults[resIdx] += As[(threadRow * TM + resIdx) * BK + dotIdx] * tmpB;
+            }
+        }
+        __syncthreads();
+    }
+
+    for (uint resIdx = 0; resIdx < TM; ++resIdx) {
+        C[(threadRow * TM + resIdx) * N + threadCol] = alpha * threadResults[resIdx] + beta * C[(threadRow * TM + resIdx) * N + threadCol];
+    }
 }
 
 template <const uint BLOCKSIZE>
