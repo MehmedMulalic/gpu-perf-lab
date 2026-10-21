@@ -63,7 +63,7 @@ __global__ void sgemm_smem(int M, int N, int K, float alpha, float beta,
     C += cRow * BLOCKSIZE * N + cCol * BLOCKSIZE;
 
     float acc = 0.0f;
-    for (int bkIdx = 0; bkIdx < K; bkIdx += BLOCKSIZE) {
+    for (uint bkIdx = 0; bkIdx < K; bkIdx += BLOCKSIZE) {
         As[threadRow * BLOCKSIZE + threadCol] = A[threadRow * K + threadCol];
         Bs[threadRow * BLOCKSIZE + threadCol] = B[threadRow * N + threadCol];
         __syncthreads();
@@ -71,7 +71,7 @@ __global__ void sgemm_smem(int M, int N, int K, float alpha, float beta,
         A += BLOCKSIZE;
         B += BLOCKSIZE * N;
 
-        for (int dotIdx = 0; dotIdx < BLOCKSIZE; ++dotIdx) {
+        for (uint dotIdx = 0; dotIdx < BLOCKSIZE; ++dotIdx) {
             acc += As[threadRow * BLOCKSIZE + dotIdx] * Bs[dotIdx * BLOCKSIZE + threadCol];
         }
         __syncthreads();
