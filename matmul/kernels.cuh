@@ -9,6 +9,8 @@
 using uint = unsigned int;
 
 /*
+Single-point matrix multiplication defined with sizes described below:
+ A  *  B  =  C
 MxK * KxN = MxN
 */
 
